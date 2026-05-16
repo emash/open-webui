@@ -1902,24 +1902,22 @@ async def get_app_config(request: Request):
         **({'onboarding': True} if onboarding else {}),
         'status': True,
         'name': app.state.WEBUI_NAME,
-        'version': VERSION,
         'default_locale': str(DEFAULT_LOCALE),
         'oauth': {
             'providers': {name: config.get('name', name) for name, config in OAUTH_PROVIDERS.items()},
             'auto_redirect': config.get('oauth.auto_redirect'),
         },
-        'features': {
-            # --- Public: required by login/signup page pre-auth ---
-            'auth': WEBUI_AUTH,
-            'auth_trusted_header': bool(WEBUI_AUTH_TRUSTED_EMAIL_HEADER),
-            'enable_signup_password_confirmation': ENABLE_SIGNUP_PASSWORD_CONFIRMATION,
-            'enable_ldap': config.get('ldap.enable'),
-            'enable_signup': config.get('ui.enable_signup'),
-            'enable_login_form': config.get('ui.enable_login_form'),
-            'enable_websocket': ENABLE_WEBSOCKET_SUPPORT,
-            # --- Authenticated: only consumed by logged-in frontend ---
-            **(
-                {
+        **(
+            {
+                'version': VERSION,
+                'features': {
+                    'auth': WEBUI_AUTH,
+                    'auth_trusted_header': bool(WEBUI_AUTH_TRUSTED_EMAIL_HEADER),
+                    'enable_signup_password_confirmation': ENABLE_SIGNUP_PASSWORD_CONFIRMATION,
+                    'enable_ldap': config.get('ldap.enable'),
+                    'enable_signup': config.get('ui.enable_signup'),
+                    'enable_login_form': config.get('ui.enable_login_form'),
+                    'enable_websocket': ENABLE_WEBSOCKET_SUPPORT,
                     'enable_api_keys': config.get('auth.enable_api_keys'),
                     'enable_password_change_form': config.get('ui.enable_password_change_form'),
                     'enable_version_update_check': ENABLE_VERSION_UPDATE_CHECK,
@@ -1959,10 +1957,17 @@ async def get_app_config(request: Request):
                         else {}
                     ),
                 }
-                if user is not None
-                else {}
-            ),
-        },
+            }
+            if user is not None
+            else {
+                'version': '0.0.0',
+                'features': {
+                    'auth': WEBUI_AUTH,
+                    'enable_signup': config.get('ui.enable_signup'),
+                    'enable_login_form': config.get('ui.enable_login_form'),
+                }
+            }
+        ),
         **(
             {
                 'default_models': config.get('ui.default_models'),
