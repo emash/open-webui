@@ -1,43 +1,47 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# Backend CI — Python formatting checks via Ruff
-# Runs on pushes and PRs to main/dev when backend files change
-# ─────────────────────────────────────────────────────────────────────────────
-name: Python CI
+name: Python Package Build
 
 on:
   push:
-    branches: [main, dev]
-    paths: ['backend/**', 'pyproject.toml', 'uv.lock', '.github/workflows/backend.yaml']
+    branches: [main]
   pull_request:
-    branches: [main, dev]
-    paths: ['backend/**', 'pyproject.toml', 'uv.lock', '.github/workflows/backend.yaml']
+    branches: [main]
 
 concurrency:
   group: backend-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # ── Ruff format check across supported Python versions ───────────────────
-  format-check:
-    name: Ruff Format (${{ matrix.python-version }})
+  build-package:
+    name: Build Wheel Package
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ['3.11', '3.12']
     steps:
       - uses: actions/checkout@v5
 
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install Frontend Dependencies
+        run: npm ci --force
+
+      - name: Compile Production Frontend
+        run: npm run build
+
       - uses: actions/setup-python@v6
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.11'
 
-      - name: Install formatter
-        run: pip install "ruff>=0.15.5"
+      - name: Install Build Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install hatchling
 
-      - name: Verify formatting
-        run: ruff format --check . --exclude .venv --exclude venv
+      - name: Build Package (Wheel)
+        run: |
+          python -m hatchling build --target wheel
 
-      - name: Detect logic errors
-        run: ruff check --select=F --ignore=F401,F403,F405,F541,F811,F841 --output-format=github .
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-webui-wheel
+          path: dist/*.whl
