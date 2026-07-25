@@ -304,17 +304,17 @@ class CORSStaticFiles(StaticFiles):
 
 if LOG_FORMAT != 'json':
     banner = rf"""
- ██████╗ ██████╗ ███████╗███╗   ██╗    ██╗    ██╗███████╗██████╗ ██╗   ██╗██╗
-██╔═══██╗██╔══██╗██╔════╝████╗  ██║    ██║    ██║██╔════╝██╔══██╗██║   ██║██║
-██║   ██║██████╔╝█████╗  ██╔██╗ ██║    ██║ █╗ ██║█████╗  ██████╔╝██║   ██║██║
-██║   ██║██╔═══╝ ██╔══╝  ██║╚██╗██║    ██║███╗██║██╔══╝  ██╔══██╗██║   ██║██║
-╚██████╔╝██║     ███████╗██║ ╚████║    ╚███╔███╔╝███████╗██████╔╝╚██████╔╝██║
- ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝     ╚══╝╚══╝ ╚══════╝╚═════╝  ╚═════╝ ╚═╝
+                          _                        
+                         | |                       
+  __,   __   __   _  _   | |  __,    _  _    _ _|_ 
+ /  |  /    /  \_/ |/ |  |/  /  |   / |/ |  |/  |  
+ \_/|_/\___/\__/   |  |_/|__/\_/|_/o  |  |_/|__/|_/
+                         |\                        
+                         |/                        
 
-
-v{VERSION} - building the best AI user interface.
+v{VERSION} - Given and not earned.
 {f'Commit: {WEBUI_BUILD_HASH}' if WEBUI_BUILD_HASH != 'dev-build' else ''}
-https://github.com/open-webui/open-webui
+https://github.com/emash/open-webui
 """
     try:
         print(banner)
