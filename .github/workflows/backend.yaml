@@ -25,6 +25,8 @@ jobs:
         run: npm ci --force
 
       - name: Compile Production Frontend
+        env:
+          NODE_OPTIONS: "--max-old-space-size=6144"
         run: npm run build
 
       - uses: actions/setup-python@v6
